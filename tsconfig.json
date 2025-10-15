@@ -1,0 +1,48 @@
+{
+  // 🌐 Projeto Node.js com suporte a ES Modules
+  "compilerOptions": {
+    /* =====================
+       📁 Estrutura de pastas
+       ===================== */
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    /* =====================
+       ⚙️ Ambiente de execução
+       ===================== */
+    "target": "ES2022",               // Gera código moderno
+    "module": "NodeNext",             // Suporte total a import/export
+    "moduleResolution": "NodeNext",   // Resolve corretamente ESM + CommonJS
+    "lib": ["ESNext"],                // Inclui todas as APIs modernas do JS
+    "types": ["node"],                // Inclui os tipos do Node.js
+    "resolveJsonModule": true,        // Permite importar arquivos .json
+    "esModuleInterop": true,          // Suporte a import default de libs CommonJS
+
+    /* =====================
+       🧩 Saída e depuração
+       ===================== */
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    /* =====================
+       🔒 Regras de segurança
+       ===================== */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    /* =====================
+       🧠 Outros ajustes
+       ===================== */
+    "skipLibCheck": true,             // Evita erros em libs externas
+    "isolatedModules": true,          // Garante compatibilidade com ESM
+    "forceConsistentCasingInFileNames": true
+  },
+
+  /* =====================
+     📦 Inclui os arquivos do projeto
+     ===================== */
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
