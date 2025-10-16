@@ -1,5 +1,5 @@
 node_modules/
 dist/
-auth_info_baileys/
+auth_info
 .env
 .DS_Store
