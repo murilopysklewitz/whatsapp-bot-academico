@@ -1,4 +1,5 @@
 import { WASocket } from "@whiskeysockets/baileys";
+import dayjs from "dayjs";
 
 export async function handleCommand(sock: WASocket, sender: string, text:string) {
     const [command, ...args] = text.trim().split(' ');
@@ -13,7 +14,7 @@ export async function handleCommand(sock: WASocket, sender: string, text:string)
 
         case '/help':
 
-            await sock.sendMessage(sender, { text: 'Available commands:\n /hello\n /help\n' });
+            await sock.sendMessage(sender, { text: 'Available commands:\n /hello\n /help\n /addAviso\n' });
             break;
 
         case '/addAviso':
@@ -48,6 +49,16 @@ export async function handleCommand(sock: WASocket, sender: string, text:string)
             avisos.push(avisoObj)
 
             await sock.sendMessage(sender, { text: 'Aviso adicionado com sucesso!\n' + avisoObj.texto + 'no data' + avisoObj.data + '\n' });
+            break;
+        case '/listarAvisos':
+
+            await sock.sendMessage(sender, { text: 'Avisos:\n' + avisos.map((aviso) =>
+                `${aviso.texto} no dia ${aviso.data},
+                 faltam ${dayjs(`${aviso.data}/${dayjs().year()}`, 'DD/MM/YYYY')
+                .diff(dayjs(), 'days')} dias`)
+                .join('\n') });
+                
+            break;
 
         default:
 
