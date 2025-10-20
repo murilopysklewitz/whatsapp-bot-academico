@@ -14,9 +14,6 @@ O Bot é um assistente inteligente que centraliza, organiza e automatiza o geren
 Impacto Medido
 
 ⏱️ Tempo de busca: 10min/dia → 0min/dia
-👥 Usuários ativos: 30+ estudantes (e crescendo)
-📊 Taxa de engajamento: 85% dos usuários interagem diariamente
-🎓 Eventos gerenciados: 150+ provas e trabalhos cadastrados
 
 
 ✨ Funcionalidades
@@ -31,10 +28,6 @@ Impacto Medido
 
 **Exemplo de output:**
 ```
-📚 Resumo da aula de Banco de Dados:
-- Normalização de dados (1FN, 2FN, 3FN)
-- Diferenças entre chaves primárias e estrangeiras
-- Modelagem entidade-relacionamento
 
 📌 Datas detectadas:
 ✅ Prova de BD - 25/11 (adicionada automaticamente!)
@@ -164,7 +157,6 @@ Performance
 ### Técnico:
 
 Arquitetura de bots conversacionais
-Integração com APIs de IA (prompt engineering)
 Gerenciamento de estado em aplicações real-time
 Trade-offs entre diferentes bibliotecas (Baileys vs whatsapp-web.js)
 Otimização de custos de API (caching, batching)
