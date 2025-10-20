@@ -8,7 +8,7 @@ import { ListarAvisosUseCase } from "./usecases/ListarAvisoUsecase.js";
 
 
 async function main() {
-  console.log('🚀 Iniciando StudySync Bot...\n');
+  console.log(' Iniciando Bot...\n');
 
   const avisoRepo = new JsonAvisoRepository('./storage/avisos.json');
   

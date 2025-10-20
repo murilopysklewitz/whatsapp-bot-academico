@@ -47,7 +47,7 @@ export class WhatsAppBot {
 
         default:
           await sock.sendMessage(chatId, { 
-            text: `❌ Comando "${command}" não reconhecido.\n\nUse /ajuda` 
+            text: ` Comando "${command}" não reconhecido.\n\nUse /ajuda` 
           });
       }
     } catch (error) {
@@ -58,16 +58,16 @@ export class WhatsAppBot {
         : 'Erro desconhecido';
       
       await sock.sendMessage(chatId, { 
-        text: `❌ Erro: ${errorMessage}` 
+        text: ` Erro: ${errorMessage}` 
       });
     }
   }
 
   private async sendHelp(chatId: string, sock: any): Promise<void> {
     const helpText = `
-🤖 *StudySync Bot - Comandos*
+ * Bot - Comandos*
 
-📅 *Gerenciar Avisos:*
+ *Gerenciar Avisos:*
 - /add DD/MM texto
   Exemplo: /add 25/12 Prova de BD
 
@@ -91,7 +91,7 @@ export class WhatsAppBot {
   ): Promise<void> {
     if (args.length < 2) {
       await sock.sendMessage(chatId, { 
-        text: '❌ Uso: /add DD/MM texto\n\nExemplo:\n/add 25/12 Prova de BD' 
+        text: ' Uso: /add DD/MM texto\n\nExemplo:\n/add 25/12 Prova de BD' 
       });
       return;
     }
@@ -108,7 +108,7 @@ export class WhatsAppBot {
     const diasRestantes = aviso.getDiasRestantes();
     
     await sock.sendMessage(chatId, { 
-      text: `✅ Aviso salvo!\n\n📅 ${dataStr}\n📝 ${texto}\n⏰ Faltam ${diasRestantes} dia(s)` 
+      text: ` Aviso salvo!\n\n📅 ${dataStr}\n ${texto}\n Faltam ${diasRestantes} dia(s)` 
     });
   }
 
@@ -118,7 +118,7 @@ export class WhatsAppBot {
 
     if (!avisos.length) {
       await sock.sendMessage(chatId, { 
-        text: '📭 Nenhum aviso cadastrado.\n\nUse /add DD/MM texto' 
+        text: ' Nenhum aviso cadastrado.\n\nUse /add DD/MM texto' 
       });
       return;
     }
@@ -161,7 +161,7 @@ export class WhatsAppBot {
   ): Promise<void> {
     if (args.length !== 1) {
       await sock.sendMessage(chatId, { 
-        text: '❌ Uso: /deletar [número]\n\nExemplo: /deletar 1' 
+        text: ' Uso: /deletar [número]\n\nExemplo: /deletar 1' 
       });
       return;
     }
@@ -170,7 +170,7 @@ export class WhatsAppBot {
     
     if (isNaN(index) || index < 0) {
       await sock.sendMessage(chatId, { 
-        text: '❌ Número inválido' 
+        text: ' Número inválido' 
       });
       return;
     }
@@ -178,7 +178,7 @@ export class WhatsAppBot {
     
     if (index >= avisos.length) {
       await sock.sendMessage(chatId, { 
-        text: `❌ Aviso ${index + 1} não existe. Use /lista` 
+        text: ` Aviso ${index + 1} não existe. Use /lista` 
       });
       return;
     }
@@ -187,7 +187,7 @@ export class WhatsAppBot {
     await this.deletarAvisoUseCase.execute(aviso!.id);
 
     await sock.sendMessage(chatId, { 
-      text: `🗑️ Aviso deletado:\n"${aviso!.texto}" - ${aviso!.data}` 
+      text: ` Aviso deletado:\n"${aviso!.texto}" - ${aviso!.data}` 
     });
   }
 }

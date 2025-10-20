@@ -33,36 +33,36 @@ import makeWASocket, {
       if (connection === 'close') {
         const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode;
         
-        console.log(`🔴 Desconectado. Status: ${statusCode}`);
+        console.log(` Desconectado. Status: ${statusCode}`);
         
         switch (statusCode) {
           case 401:
-            console.log('❌ Não autorizado. Delete auth_info e tente novamente.');
+            console.log(' Não autorizado. Delete auth_info e tente novamente.');
             break;
           case 405:
-            console.log('⚠️ Método não permitido (erro 405)');
-            console.log('💡 Soluções:');
+            console.log(' Método não permitido (erro 405)');
+            console.log(' Soluções:');
             console.log('   1. Aguarde 30 minutos antes de tentar novamente');
             console.log('   2. Delete auth_info/');
             console.log('   3. Use pairing code ao invés de QR');
             break;
           case 408:
-            console.log('⏱️ Timeout. Sua internet está lenta?');
+            console.log('⏱ Timeout. Sua internet está lenta?');
             break;
           case 440:
-            console.log('⚠️ QR Code expirou. Gerando novo...');
+            console.log(' QR Code expirou. Gerando novo...');
             setTimeout(() => createBaileysConnection(onMessage), 5000);
             break;
           default:
             if (statusCode !== DisconnectReason.loggedOut) {
-              console.log('🔄 Reconectando em 10s...');
+              console.log(' Reconectando em 10s...');
               setTimeout(() => createBaileysConnection(onMessage), 10000);
             }
         }
       }
   
       if (connection === 'open') {
-        console.log('✅ Conectado com sucesso!\n');
+        console.log(' Conectado com sucesso!\n');
       }
     });
   
