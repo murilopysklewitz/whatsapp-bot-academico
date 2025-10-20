@@ -54,15 +54,7 @@ Impacto Medido
 ### **Backend & Bot**
 - **Node.js** + **TypeScript** - Runtime e tipagem estática
 - **Baileys** - Cliente WhatsApp Web (alternativa segura ao whatsapp-web.js)
-- **Better-SQLite3** - Banco de dados leve e performático
-- **Node-Cron** - Agendamento de tarefas automatizadas
 
-
-### **DevOps & Deploy**
-- **Docker** - Containerização
-- **GitHub Actions** - CI/CD automatizado
-- **Railway/VPS** - Hosting e deploy contínuo
-- **PM2** - Process management e auto-restart
 
 ### **Qualidade de Código**
 - **ESLint** + **Prettier** - Code linting e formatação
