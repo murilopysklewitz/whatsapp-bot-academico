@@ -22,17 +22,6 @@ export class Aviso {
         );
       }
     
-      get diasRestantes(): number {
-        const [dia, mes] = this.data.split('/').map(Number);
-        const dataAviso = dayjs(`${dayjs().year()}-${mes}-${dia}`);
-        const diff = dataAviso.diff(dayjs(), 'day');
-        return diff >= 0 ? diff : 0;
-      }
-    
-      get descricaoCompleta(): string {
-        return `${this.texto} no dia ${this.data} (faltam ${this.diasRestantes} dia${this.diasRestantes !== 1 ? 's' : ''})`;
-      }
-    
       static create({ texto, data, grupo }: { texto: string; data: string; grupo: string }): Aviso {
         return new Aviso(Date.now(), texto, data, grupo);
       }

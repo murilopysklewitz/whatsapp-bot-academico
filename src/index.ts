@@ -7,12 +7,15 @@ import { createBaileysConnection } from './infra/bot/BaileysConnection.js';
 import { AvisoRepository } from './infra/database/AvisoRepository.js';
 
 async function main() {
-  const { sock, groupCache } = await createBaileysConnection();
 
   const avisoRepo = new AvisoRepository();
   const addAviso = new AddAvisoUseCase(avisoRepo);
   const listarAvisos = new ListarAvisosUseCase(avisoRepo);
-  const bot = new WhatsAppBot(addAviso, listarAvisos, sock);
+  const bot = new WhatsAppBot(addAviso, listarAvisos);
+
+  const { sock } = await createBaileysConnection((sender, message, group) =>
+    bot.handleMessage(sender, message, group, sock)
+  )
 
 }
 
