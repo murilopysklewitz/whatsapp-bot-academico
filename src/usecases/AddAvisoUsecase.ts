@@ -1,4 +1,4 @@
-// src/usecases/AddAvisoUsecase.ts
+
 import { Aviso } from "../domain/entities/Aviso.js";
 import { IAvisoRepository } from "../domain/repo/IAvisoRepository.js";
 

@@ -1,4 +1,3 @@
-// src/main.ts
 
 import { createBaileysConnection } from "./infra/bot/BaileysConnection.js";
 import { WhatsAppBot } from "./infra/bot/bot.js";

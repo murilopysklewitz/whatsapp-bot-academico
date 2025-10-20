@@ -1,4 +1,4 @@
-// src/usecases/DeletarAvisoUsecase.ts
+
 import { IAvisoRepository } from "../domain/repo/IAvisoRepository.js";
 
 export class DeletarAvisoUseCase {
