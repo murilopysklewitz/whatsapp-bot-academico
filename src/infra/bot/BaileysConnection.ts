@@ -47,7 +47,7 @@ import makeWASocket, {
             console.log('   3. Use pairing code ao invés de QR');
             break;
           case 408:
-            console.log('⏱ Timeout. Sua internet está lenta?');
+            console.log(' Timeout. Sua internet está lenta?');
             break;
           case 440:
             console.log(' QR Code expirou. Gerando novo...');

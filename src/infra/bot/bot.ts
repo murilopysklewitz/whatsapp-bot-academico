@@ -1,9 +1,7 @@
-
-import dayjs from 'dayjs';
 import { AddAvisoUseCase } from '../../usecases/AddAvisoUsecase.js';
 import { ListarAvisosUseCase } from '../../usecases/ListarAvisoUsecase.js';
 import { DeletarAvisoUseCase } from '../../usecases/DeletarAvisoUsecase.js';
-
+import { Aviso } from '../../domain/entities/Aviso.js';
 
 export class WhatsAppBot {
   constructor(
@@ -19,81 +17,84 @@ export class WhatsAppBot {
     sock: any
   ): Promise<void> {
     const trimmed = message.trim();
-    
     if (!trimmed.startsWith('/')) return;
 
     const [command, ...args] = trimmed.split(' ');
 
     try {
+      let response: string;
+
       switch (command!.toLowerCase()) {
         case '/ajuda':
-          await this.sendHelp(chatId, sock);
+          response = this.getHelpText();
           break;
 
         case '/addaviso':
         case '/add':
-          await this.handleAddAviso(chatId, args, sock);
+          if (args.length < 2) {
+             '⚠️ Uso: /add DD/MM texto\n\nExemplo:\n/add 25/12 Prova de BD';
+          }
+      
+          const [dataStr, ...textoArray] = args;
+          const texto = textoArray.join(' ');
+      
+          const aviso = await this.addAvisoUseCase.execute({
+            texto,
+            data: dataStr!,
+            grupo: chatId,
+          });
+      
+          const dias = aviso.getDiasRestantes();
+           `✅ Aviso salvo!\n\n📅 ${dataStr}\n📝 ${texto}\n⏰ Faltam ${dias} dia(s)`;
+          response = await this.addAviso(chatId, args);
           break;
 
         case '/listaravisos':
         case '/lista':
-          await this.handleListarAvisos(chatId, sock);
+          response = await this.listarAvisos(chatId);
           break;
 
         case '/deletaraviso':
         case '/deletar':
-          await this.handleDeletarAviso(chatId, args, sock);
+          response = await this.deletarAviso(chatId, args);
           break;
 
         default:
-          await sock.sendMessage(chatId, { 
-            text: ` Comando "${command}" não reconhecido.\n\nUse /ajuda` 
-          });
+          response = `❌ Comando "${command}" não reconhecido.\n\nUse /ajuda`;
       }
+
+      await sock.sendMessage(chatId, { text: response });
+
     } catch (error) {
-      console.error('Erro ao processar comando:', error);
-      
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Erro desconhecido';
-      
-      await sock.sendMessage(chatId, { 
-        text: ` Erro: ${errorMessage}` 
-      });
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      await sock.sendMessage(chatId, { text: `❌ Erro: ${errorMessage}` });
     }
   }
 
-  private async sendHelp(chatId: string, sock: any): Promise<void> {
-    const helpText = `
- * Bot - Comandos*
+  // ========== COMANDOS ==========
 
- *Gerenciar Avisos:*
-- /add DD/MM texto
+  private getHelpText(): string {
+    return `
+📚 *Bot - Comandos*
+
+*Gerenciar Avisos:*
+• /add DD/MM texto
   Exemplo: /add 25/12 Prova de BD
 
-- /lista
+• /lista
   Lista avisos do grupo
 
-- /deletar [número]
+• /deletar [número]
   Deleta aviso pelo número da lista
 
-- /ajuda
+• /ajuda
   Mostra esta mensagem
     `.trim();
-
-    await sock.sendMessage(chatId, { text: helpText });
   }
 
-  private async handleAddAviso(
-    chatId: string, 
-    args: string[], 
-    sock: any
-  ): Promise<void> {
+  private async addAviso(chatId: string, args: string[]): Promise<string> {
     if (args.length < 2) {
-      await sock.sendMessage(chatId, { 
-        text: ' Uso: /add DD/MM texto\n\nExemplo:\n/add 25/12 Prova de BD' 
-      });
-      return;
+      return '⚠️ Uso: /add DD/MM texto\n\nExemplo:\n/add 25/12 Prova de BD';
     }
 
     const [dataStr, ...textoArray] = args;
@@ -105,89 +106,69 @@ export class WhatsAppBot {
       grupo: chatId,
     });
 
-    const diasRestantes = aviso.getDiasRestantes();
-    
-    await sock.sendMessage(chatId, { 
-      text: ` Aviso salvo!\n\n📅 ${dataStr}\n ${texto}\n Faltam ${diasRestantes} dia(s)` 
-    });
+    const dias = aviso.getDiasRestantes();
+    return `✅ Aviso salvo!\n\n📅 ${dataStr}\n📝 ${texto}\n⏰ Faltam ${dias} dia(s)`;
   }
 
-  private async handleListarAvisos(chatId: string, sock: any): Promise<void> {
-
+  private async listarAvisos(chatId: string): Promise<string> {
     const avisos = await this.listarAvisosUseCase.execute(chatId);
 
     if (!avisos.length) {
-      await sock.sendMessage(chatId, { 
-        text: ' Nenhum aviso cadastrado.\n\nUse /add DD/MM texto' 
-      });
-      return;
+      return '📭 Nenhum aviso cadastrado.\n\nUse /add DD/MM texto';
     }
 
-    const hoje = dayjs();
-    const textoAvisos = avisos.map((aviso, index) => {
-      const diasRestantes = aviso.getDiasRestantes();
-      
-      let emoji = '📅';
-      let urgencia = '';
-      
-      if (aviso.isAtrasado()) {
-        emoji = '⏰';
-        urgencia = ' (ATRASADO!)';
-      } else if (diasRestantes === 0) {
-        emoji = '🔥';
-        urgencia = ' (HOJE!)';
-      } else if (diasRestantes === 1) {
-        emoji = '⚠️';
-        urgencia = ' (AMANHÃ!)';
-      } else if (diasRestantes <= 3) {
-        emoji = '📌';
-        urgencia = ` (${diasRestantes} dias)`;
-      } else {
-        urgencia = ` (${diasRestantes} dias)`;
-      }
+    const lista = avisos
+      .map((aviso, i) => this.formatarAviso(aviso, i + 1))
+      .join('\n\n');
 
-      return `${index + 1}. ${emoji} *${aviso.texto}*\n   ${aviso.data}${urgencia}`;
-    }).join('\n\n');
-
-    await sock.sendMessage(chatId, { 
-      text: `📋 *Avisos:*\n\n${textoAvisos}\n\n💡 Total: ${avisos.length}` 
-    });
+    return `📋 *Avisos:*\n\n${lista}\n\n💡 Total: ${avisos.length}`;
   }
 
-  private async handleDeletarAviso(
-    chatId: string, 
-    args: string[], 
-    sock: any
-  ): Promise<void> {
+  private async deletarAviso(chatId: string, args: string[]): Promise<string> {
     if (args.length !== 1) {
-      await sock.sendMessage(chatId, { 
-        text: ' Uso: /deletar [número]\n\nExemplo: /deletar 1' 
-      });
-      return;
+      return '⚠️ Uso: /deletar [número]\n\nExemplo: /deletar 1';
     }
 
     const index = parseInt(args[0]!) - 1;
     
     if (isNaN(index) || index < 0) {
-      await sock.sendMessage(chatId, { 
-        text: ' Número inválido' 
-      });
-      return;
+      return '❌ Número inválido';
     }
+
     const avisos = await this.listarAvisosUseCase.execute(chatId);
     
     if (index >= avisos.length) {
-      await sock.sendMessage(chatId, { 
-        text: ` Aviso ${index + 1} não existe. Use /lista` 
-      });
-      return;
+      return `❌ Aviso ${index + 1} não existe. Use /lista`;
     }
 
-    const aviso = avisos[index];
-    await this.deletarAvisoUseCase.execute(aviso!.id);
+    const aviso = avisos[index]!;
+    await this.deletarAvisoUseCase.execute(aviso.id);
 
-    await sock.sendMessage(chatId, { 
-      text: ` Aviso deletado:\n"${aviso!.texto}" - ${aviso!.data}` 
-    });
+    return `🗑️ Aviso deletado:\n"${aviso.texto}" - ${aviso.data}`;
+  }
+
+  // ========== FORMATAÇÃO ==========
+
+  private formatarAviso(aviso: Aviso, numero: number): string {
+    const dias = aviso.getDiasRestantes();
+    const emoji = this.getEmoji(dias, aviso.isAtrasado());
+    const urgencia = this.getUrgencia(dias, aviso.isAtrasado());
+
+    return `${numero}. ${emoji} *${aviso.texto}*\n   ${aviso.data}${urgencia}`;
+  }
+
+  private getEmoji(dias: number, atrasado: boolean): string {
+    if (atrasado) return '⏰';
+    if (dias === 0) return '🔥';
+    if (dias === 1) return '⚠️';
+    if (dias <= 3) return '📌';
+    return '📅';
+  }
+
+  private getUrgencia(dias: number, atrasado: boolean): string {
+    if (atrasado) return ' (ATRASADO!)';
+    if (dias === 0) return ' (HOJE!)';
+    if (dias === 1) return ' (AMANHÃ!)';
+    return ` (${dias} dias)`;
   }
 }
