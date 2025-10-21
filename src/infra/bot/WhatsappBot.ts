@@ -37,13 +37,6 @@ export class WhatsappBot {
         if(!ACommand) {
             return 'Comando não encontrado!'
         }
-        switch (command) {
-            case '/ping':
                 return await ACommand.execute(chatId, args)   
-            case '/help':
-                return await ACommand.execute(chatId, args)
-            default:
-                return `❌ Comando "${command}" não reconhecido.\n\nUse /ajuda`;
-        }
     }
 }
