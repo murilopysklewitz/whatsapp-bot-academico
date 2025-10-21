@@ -10,6 +10,7 @@ export class MongodbRepository implements AvisosGateway {
             console.log("salvando aviso com Id:", aviso.id);
             const data = {
                 id: aviso.id,
+                codigo: aviso.codigo,
                 chatId: aviso.chatId,
                 data: aviso.data,
                 message: aviso.message,
