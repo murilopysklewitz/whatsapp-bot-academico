@@ -1,9 +1,15 @@
 import { WASocket } from "@whiskeysockets/baileys";
 import { PingCommand } from "../../application/Commands/PingCommand.js";
+import { ICommands } from "../../application/Commands/ICommands.js";
+import { HelpCommand } from "../../application/Commands/HelpCommand.js";
 
+export const commands = {
+    '/ping': new PingCommand(),
+    '/help': new HelpCommand()
+}
 export class WhatsappBot {
     constructor(
-        private readonly pingCommand: PingCommand)
+        private readonly commands: Record<string, ICommands>)
     {
 
     }
@@ -31,10 +37,15 @@ export class WhatsappBot {
 
     }
     async processCommand(command: string, args: string[], chatId: string): Promise<string> {
+        const ACommand = this.commands[command]
+        if(!ACommand) {
+            return 'Comando não encontrado!'
+        }
         switch (command) {
             case '/ping':
-                return await this.pingCommand.execute(chatId, args);   
-                
+                return await ACommand.execute(chatId, args)   
+            case '/help':
+                return await ACommand.execute(chatId, args)
             default:
                 return `❌ Comando "${command}" não reconhecido.\n\nUse /ajuda`;
         }
