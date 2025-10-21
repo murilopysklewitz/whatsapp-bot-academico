@@ -3,3 +3,4 @@ dist/
 auth_info
 .env
 .DS_Store
+/src/generated/prisma
