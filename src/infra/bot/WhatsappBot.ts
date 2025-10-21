@@ -3,10 +3,6 @@ import { PingCommand } from "../../application/Commands/PingCommand.js";
 import { ICommands } from "../../application/Commands/ICommands.js";
 import { HelpCommand } from "../../application/Commands/HelpCommand.js";
 
-export const commands = {
-    '/ping': new PingCommand(),
-    '/help': new HelpCommand()
-}
 export class WhatsappBot {
     constructor(
         private readonly commands: Record<string, ICommands>)
