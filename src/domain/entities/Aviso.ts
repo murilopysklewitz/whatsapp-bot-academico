@@ -2,16 +2,18 @@ import { randomBytes, randomUUID } from "crypto"
 
 export class Aviso {
     private constructor(
+        readonly id: string | undefined,
+        readonly codigo: string,
         readonly chatId: string,
-        readonly message: string,
         readonly data: string,
-        readonly id: string 
-        )
-        {}
+        readonly message: string,
+    ) {}
 
-    public static create(chatId: string, message: string, data:string) {
-        const id = randomBytes(6).toString("hex")
-        return new Aviso(chatId, message, data, id)
+    public static create(chatId: string, message: string, data: string) {
+        const codigo = randomBytes(3).toString('hex').toUpperCase()
+        return new Aviso(undefined, codigo, chatId, data, message)
     }
+
+
     
 }

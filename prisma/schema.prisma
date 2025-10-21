@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -15,7 +14,8 @@ datasource db {
 }
 
 model Aviso {
-  id     String @id @map("_id") @db.ObjectId
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  codigo String @unique
   chatId String
   data   String
   message String 
