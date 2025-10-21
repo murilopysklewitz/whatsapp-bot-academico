@@ -7,7 +7,7 @@ import makeWASocket, {
   import qrcode from 'qrcode-terminal';
   
   export async function createBaileysConnection(
-    onMessage: (sender: string, message: string, participant: string) => void
+    onMessage: (sender: string, message: string) => void
   ) {
     const { state, saveCreds } = await useMultiFileAuthState('./auth_info');
     
@@ -73,15 +73,14 @@ import makeWASocket, {
         if (!msg.message || msg.key.fromMe) continue;
   
         const sender = msg.key.remoteJid!;
-        const participant = msg.key.participant || sender;
         const text = 
           msg.message.conversation ||
           msg.message.extendedTextMessage?.text ||
           '';
-          console.log(sender, text, participant);
+          console.log(sender, text);
   
         if (text) {
-          await onMessage(sender, text, participant);
+          await onMessage(sender, text,);
           
         }
       }

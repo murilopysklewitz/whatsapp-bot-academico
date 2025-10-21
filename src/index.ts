@@ -7,7 +7,7 @@ async function main() {
     const bot = new WhatsappBot(pingCommand);    
 
     const { sock } = await createBaileysConnection(
-        async (chatId, message, participant) => {
+        async (chatId, message, ) => {
           await bot.handleMessage(chatId, message, sock);
         }
       );
