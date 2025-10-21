@@ -34,6 +34,7 @@ export class WhatsappBot {
     }
     async processCommand(command: string, args: string[], chatId: string): Promise<string> {
         const ACommand = this.commands[command]
+        console.log(ACommand)
         if(!ACommand) {
             return 'Comando não encontrado!'
         }
