@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import { AddCommand } from "./application/Commands/AddCommand.js";
 import { HelpCommand } from "./application/Commands/HelpCommand.js";
 import { PingCommand } from "./application/Commands/PingCommand.js";
@@ -6,6 +7,11 @@ import { WhatsappBot } from "./infra/bot/WhatsappBot.js";
 import { createBaileysConnection } from "./infra/config/BaileysConnection.js";
 import { Prisma } from "./infra/config/prismaConnection.js";
 import { MongodbRepository } from "./infra/repository/MongodbRepository.js";
+
+
+
+dotenv.config();
+console.log('DATABASE_URL:', process.env.DATABASE_URL);
 
 async function main() {
   
