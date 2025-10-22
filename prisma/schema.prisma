@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Aviso {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  id     String @id @map("_id") @db.ObjectId
   codigo String @unique
   chatId String
   data   String
