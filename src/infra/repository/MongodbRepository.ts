@@ -28,4 +28,23 @@ export class MongodbRepository implements AvisosGateway {
             throw new Error("Não foi possivel salvar aviso no banco de dados");
         }
     }
+
+    async list(): Promise<Aviso[]> {
+        try {
+            const avisos = await this.prismaClient.aviso.findMany({orderBy: { data: 'asc' }})
+
+            return avisos.map((aviso) => 
+                Aviso.fromDatabase(
+                    aviso.id,
+                    aviso.codigo,
+                    aviso.chatId,
+                    aviso.data,
+                    aviso.message
+                )
+            )
+        } catch (error: any) {
+            console.error("Erro ao listar avisos:", error);
+            throw new Error("Não foi possível listar os avisos");
+        }
+    }
 }
