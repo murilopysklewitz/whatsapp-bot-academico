@@ -7,6 +7,8 @@ import { WhatsappBot } from "./infra/bot/WhatsappBot.js";
 import { createBaileysConnection } from "./infra/config/BaileysConnection.js";
 import { Prisma } from "./infra/config/prismaConnection.js";
 import { MongodbRepository } from "./infra/repository/MongodbRepository.js";
+import { ListCommands } from './application/Commands/ListCommand.js';
+import { ListAvisoUsecase } from './application/usecases/ListAvisoUsecase.js';
 
 
 
@@ -16,12 +18,14 @@ console.log('DATABASE_URL:', process.env.DATABASE_URL);
 async function main() {
   
   const repositoryAvisos = new MongodbRepository(Prisma)
-  const addAvisoUsecase = new AddAvisoUsecase(repositoryAvisos) 
+  const addAvisoUsecase = new AddAvisoUsecase(repositoryAvisos)
+  const listAvisoUsecase = new ListAvisoUsecase(repositoryAvisos) 
 
   const commands = {
     '/ping': new PingCommand(),
     '/help': new HelpCommand(),
-    '/add': new AddCommand(addAvisoUsecase)
+    '/add': new AddCommand(addAvisoUsecase),
+    '/avisos': new ListCommands(listAvisoUsecase)
   }
 
     const bot = new WhatsappBot(commands);    
