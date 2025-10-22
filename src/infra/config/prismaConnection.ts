@@ -12,9 +12,8 @@ async function testConnection() {
     await Prisma.$connect()
     console.log("✅ Conectado ao MongoDB Atlas com sucesso!");
   } catch (error: any) {
-    throw new Error("Erro ao conectar ao mongoDb", error)
-  }finally{
-    await Prisma.$disconnect()
+    console.error("❌ Falha ao conectar ao MongoDB:", error.message)
+    throw new Error(`Erro ao conectar ao MongoDB: ${error.message}` )
   }
 }
 testConnection()
