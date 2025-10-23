@@ -11,8 +11,7 @@ export class ListCommands implements ICommands {
             return "📭 Nenhum aviso encontrado.";
           }
           const lines = avisos.map((aviso, index) => {
-            const dataFormatted = dayjs(aviso.data).format("DD/MM/YYYY")
-            return `*${index + 1 }.* ${aviso.message}\n ${dataFormatted}\n Código: ${aviso.codigo}`
+            return `*${index + 1 }.* ${aviso.message}\n ${aviso.data}\n Código: ${aviso.codigo}`
           })
           return `📋 *Lista de Avisos:*\n\n${lines.join("\n\n")}`
     }
