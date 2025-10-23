@@ -7,21 +7,20 @@ export class MongodbRepository implements AvisosGateway {
 
     async save(aviso: Aviso): Promise<void> {
         try {
-            console.log("salvando aviso com Id:", aviso.id);
             const data = {
-                id: aviso.id,
                 codigo: aviso.codigo,
                 chatId: aviso.chatId,
                 data: aviso.data,
                 message: aviso.message,
-            }
-            console.log("salvando dados do aviso:", data);
-            const saved = await this.prismaClient.aviso.upsert({
-                where: {id: aviso.id},
-                update: data,
-                create: data
-            })
-            console.log("aviso salvo com id:", saved.id);
+              };
+          
+              const saved = await this.prismaClient.aviso.create({
+                data
+              });
+          
+              console.log("✅ Aviso salvo com id:", saved.id);
+              console.log("Aviso com mensagem: ", saved.message);
+              console.log("Aviso com data: ", saved.data)
 
         }catch(error: any) {
             console.error("Error salvando aviso:", error);
@@ -31,7 +30,7 @@ export class MongodbRepository implements AvisosGateway {
 
     async list(): Promise<Aviso[]> {
         try {
-            const avisos = await this.prismaClient.aviso.findMany({orderBy: { data: 'asc' }})
+            const avisos = await this.prismaClient.aviso.findMany()
 
             return avisos.map((aviso) => 
                 Aviso.fromDatabase(
