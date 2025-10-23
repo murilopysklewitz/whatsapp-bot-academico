@@ -28,14 +28,16 @@ async function main() {
     '/avisos': new ListCommands(listAvisoUsecase)
   }
 
-    const bot = new WhatsappBot(commands);    
+  const { sock } = await createBaileysConnection(
+      async (chatId, message ) => {
+        await bot.handleMessage(chatId, message, sock);
+        console.log('✅ Bot pronto! Envie /ping no WhatsApp')
+      },
+    );
+
+    const bot = new WhatsappBot(commands);  
 
 
-    const { sock } = await createBaileysConnection(
-        async (chatId, message, ) => {
-          await bot.handleMessage(chatId, message, sock);
-        }
-      );
     console.log(' Bot pronto! Envie /ping no WhatsApp\n');
 }
 main().catch(error => {
