@@ -28,9 +28,9 @@ export class MongodbRepository implements AvisosGateway {
         }
     }
 
-    async list(): Promise<Aviso[]> {
+    async list(chatId:string): Promise<Aviso[]> {
         try {
-            const avisos = await this.prismaClient.aviso.findMany()
+            const avisos = await this.prismaClient.aviso.findMany({where: {chatId: chatId}})
 
             return avisos.map((aviso) => 
                 Aviso.fromDatabase(
