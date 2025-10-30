@@ -46,4 +46,15 @@ export class MongodbRepository implements AvisosGateway {
             throw new Error("Não foi possível listar os avisos");
         }
     }
+    async delete(codigo: string): Promise<string> {
+        try {
+            const avisoADeletar = await this.prismaClient.aviso.delete({where: {codigo: codigo}})
+            if(!avisoADeletar) {
+                throw new Error("Não foi possivel achar o aviso no banco de dados para deletar")
+            }
+            return `Aviso ${avisoADeletar.message} deletado`
+        } catch (error: any) {
+            throw new Error("Erro em deletar aviso no banco de dados", error)
+        } 
+    }
 }
