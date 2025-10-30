@@ -7,7 +7,7 @@ export class DeleteCommand implements ICommands {
         if (!args.length) {
             return " Você precisa informar o código do aviso para deletar. Ex: /delete ABC123";
           }
-        const codigo = args.join()
+        const codigo = args.join("").trim().toUpperCase()
         return await this.deleteAvisoUsecase.execute(codigo)
     }
 }
