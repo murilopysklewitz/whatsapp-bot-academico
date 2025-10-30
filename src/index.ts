@@ -9,6 +9,8 @@ import { Prisma } from "./infra/config/prismaConnection.js";
 import { MongodbRepository } from "./infra/repository/MongodbRepository.js";
 import { ListCommands } from './application/Commands/ListCommand.js';
 import { ListAvisoUsecase } from './application/usecases/ListAvisoUsecase.js';
+import { DeleteCommand } from './application/Commands/DeleteCommand.js';
+import { DeleteAvisoUsecase } from './application/usecases/DeleteAvisoUsecase.js';
 
 
 
@@ -20,12 +22,14 @@ async function main() {
   const repositoryAvisos = new MongodbRepository(Prisma)
   const addAvisoUsecase = new AddAvisoUsecase(repositoryAvisos)
   const listAvisoUsecase = new ListAvisoUsecase(repositoryAvisos) 
+  const deleteAvisoUsecase = new DeleteAvisoUsecase(repositoryAvisos)
 
   const commands = {
     '/ping': new PingCommand(),
     '/help': new HelpCommand(),
     '/add': new AddCommand(addAvisoUsecase),
-    '/avisos': new ListCommands(listAvisoUsecase)
+    '/avisos': new ListCommands(listAvisoUsecase),
+    '/delete': new DeleteCommand(deleteAvisoUsecase)
   }
 
   const { sock } = await createBaileysConnection(
