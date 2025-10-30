@@ -16,7 +16,8 @@ export class ListAvisoUsecase {
     private parseData(dataStr: string): dayjs.Dayjs {
 
         const [dia, mes] = dataStr.split('/').map(Number)
-        const ano = dayjs().year()
+        const ano = dayjs().year() 
+        
         
         let data = dayjs(`${ano}-${mes}-${dia}`, 'YYYY-M-D')
         
