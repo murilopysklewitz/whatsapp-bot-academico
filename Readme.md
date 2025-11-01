@@ -41,7 +41,7 @@ O **Bot Acadêmico** é um assistente inteligente que centraliza, organiza e aut
 Cadastre e organize todos os seus compromissos acadêmicos com comandos simples:
 
 ```
-/add prova BD 20/11
+/add 20/11 prova BD 
 ```
 
 **Recursos:**
