@@ -1,25 +1,21 @@
 import makeWASocket, {
   useMultiFileAuthState,
   fetchLatestBaileysVersion,
-  DisconnectReason,
+  DisconnectReason
 } from '@whiskeysockets/baileys'
-import fs from 'fs'
-import path from 'path'
 import qrcode from 'qrcode'
+import P from 'pino'
+import { WhatsappBot } from '../bot/WhatsappBot.js'
 
-export async function connectBaileys(
-  onMessage: (chatId: string, text: string, sock: any) => Promise<void>
-) {
-  const authDir = path.resolve('auth_info')
-
-  const { state, saveCreds } = await useMultiFileAuthState(authDir)
+export async function createBaileysConnection(phoneNumber: string) {
+  const { state, saveCreds } = await useMultiFileAuthState('./auth')
   const { version } = await fetchLatestBaileysVersion()
 
   const sock = makeWASocket({
-    version,
     auth: state,
-    printQRInTerminal: false,
-    browser: ['ZapBot', 'Chrome', '1.0'],
+    version,
+    logger: P({ level: 'silent' }),
+    browser: ['Chrome', 'Desktop', '1.0']
   })
 
   sock.ev.on('creds.update', saveCreds)
@@ -33,33 +29,44 @@ export async function connectBaileys(
     }
 
     if (connection === 'open') {
-      console.log('✅ WhatsApp conectado com sucesso')
+      console.log('✅ WhatsApp conectado com sucesso!')
     }
 
     if (connection === 'close') {
-      const reason = lastDisconnect?.error?.output?.statusCode
-      console.log('❌ Conexão fechada:', reason)
+      const code = (lastDisconnect?.error as any)?.output?.statusCode
+      console.log('❌ Conexão fechada. Código:', code)
 
-      if (reason !== DisconnectReason.loggedOut) {
-        console.log('🔄 Reconectando...')
-        connectBaileys(onMessage)
+      if (code !== DisconnectReason.loggedOut) {
+        console.log('🔄 Tentando reconectar em 5s...')
+        setTimeout(() => createBaileysConnection(phoneNumber), 5000)
       }
     }
   })
 
-  sock.ev.on('messages.upsert', async ({ messages }) => {
-    const msg = messages[0]
-    if (!msg.message || msg.key.fromMe) return
+  return sock
+}
 
-    const chatId = msg.key.remoteJid!
-    const text =
-      msg.message.conversation ||
-      msg.message.extendedTextMessage?.text
+export async function bootstrap(bot: WhatsappBot) {
+  const PHONE_NUMBER = process.env.PHONE_NUMBER
+  if (!PHONE_NUMBER) throw new Error("Phone number não pode ser nulo")
 
-    if (text) {
-      await onMessage(chatId, text, sock)
+  const sock = await createBaileysConnection(PHONE_NUMBER)
+
+  sock.ev.on('messages.upsert', async ({ messages, type }) => {
+    if (type !== 'notify') return
+
+    for (const msg of messages) {
+      if (!msg.message || msg.key.fromMe) continue
+
+      const chatId = msg.key.remoteJid!
+      const text =
+        msg.message.conversation ||
+        msg.message.extendedTextMessage?.text ||
+        ''
+
+      if (text) {
+        await bot.handleMessage(chatId, text, sock)
+      }
     }
   })
-
-  return { sock }
 }

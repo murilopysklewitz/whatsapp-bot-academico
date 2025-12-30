@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  whatsapp-bot:
+    build: .
+    container_name: whatsapp-bot
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      # Persiste a sessão do WhatsApp
+      - ./auth_info:/app/auth_info
+      # Persiste o QR Code
+      - ./qrcode.png:/app/qrcode.png
+    ports:
+      - "3000:3000"
+    # Facilita ver o QR Code
+    stdin_open: true
+    tty: true
