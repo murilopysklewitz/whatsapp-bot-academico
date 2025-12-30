@@ -16,7 +16,7 @@ export class SmartPingCommand implements ICommands {
         const result = await this.openAiAgent.processAviso(message);
         if(!result.isAviso) return await this.openAiAgent.returnMessage(message);
 
-        const saveAviso = this.addAvisoUseCase.execute(chatId, result.date, result.message);
+        const saveAviso = await this.addAvisoUseCase.execute(chatId, result.date, result.message);
 
         return("Aviso salvo com sucesso\n");
 

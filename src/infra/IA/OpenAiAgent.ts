@@ -30,6 +30,7 @@ export class OpenAiAgent {
         })
         return response.choices[0]?.message.content ?? '';
     }
+    
     async processAviso(message: string): Promise<smartPingResult> {
         const response = await this.client.chat.completions.create({
             model: "gpt-4o-mini",
@@ -49,11 +50,14 @@ export class OpenAiAgent {
             ]
         })
         const result = response.choices[0]?.message.content ?? '';
+        console.log("[OPEN AI AGENT] resposta da IA sem tratamento", result);
         if(!result) throw new Error("mensagem não encontrada");
 
         try{
 
             let parsed = JSON.parse(result);
+
+            console.log("[OPEN AI AGENT] RESPOSTA DA IA TRATADA", parsed);
 
 
             if(!this.isValidAviso(parsed)){throw new Error("Aviso inválido")}
@@ -68,8 +72,8 @@ export class OpenAiAgent {
     private isValidAviso(obj: any): boolean{
         return (
             typeof obj?.isAviso === 'boolean' &&
-            ('mensagem' in obj) &&
-            ('data' in obj)
+            ('message' in obj) &&
+            ('date' in obj)
           )
     }
 
@@ -77,26 +81,45 @@ export class OpenAiAgent {
         return `
       Você é um analisador de mensagens.
       
-      Regras:
+      REGRAS OBRIGATÓRIAS:
       - Responda APENAS com JSON válido
       - Não use markdown
       - Não inclua texto fora do JSON
+      - Nunca explique nada
+      - Nunca inclua comentários
+      - Nunca inclua campos extras
       
-      Formato obrigatório:
+      FORMATO EXATO DA RESPOSTA:
       {
         "isAviso": boolean,
-        "mensagem": string,
-        "data": string 
+        "message": string | null,
+        "date": string | null
+      }
+      
+      REGRAS DE DATA:
+      - A data DEVE estar no formato "DD/MM"
+      - Se não houver data clara, use null
+      - NÃO invente datas
+      - NÃO use texto como "amanhã", "depois", "semana que vem"
+      
+      QUANDO isAviso = true:
+      - mensagem: descrição curta e objetiva do aviso
+      - data: "DD/MM" se existir, senão null
+      
+      QUANDO isAviso = false:
+      {
+        "isAviso": false,
+        "message": null,
+        "date": null
       }
       
       Considere aviso quando:
       - O usuário pedir para lembrar algo
-      - Mencionar data, hora ou prazo
+      - Mencionar data, prazo ou compromisso
       - Usar verbos como lembrar, avisar, marcar, agendar
       
       Mensagem do usuário:
       "${message}"
-      `
+      `;
       }
-      
 }
