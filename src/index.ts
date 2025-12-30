@@ -33,7 +33,7 @@
     const deleteAvisoUsecase = new DeleteAvisoUsecase(repositoryAvisos)
 
     const commands = {
-      '/smartping': new SmartPingCommand(openAiAgent),
+      '/smartping': new SmartPingCommand(openAiAgent, addAvisoUsecase),
       '/help': new HelpCommand(),
       '/add': new AddCommand(addAvisoUsecase),
       '/avisos': new ListCommands(listAvisoUsecase),
