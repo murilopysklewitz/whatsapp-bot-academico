@@ -1,5 +1,4 @@
 import { WASocket } from "@whiskeysockets/baileys";
-import { PingCommand } from "../../application/Commands/PingCommand.js";
 import { ICommands } from "../../application/Commands/ICommands.js";
 import { HelpCommand } from "../../application/Commands/HelpCommand.js";
 
@@ -7,7 +6,6 @@ export class WhatsappBot {
     constructor(
         private readonly commands: Record<string, ICommands>)
     {
-
     }
 
     async handleMessage(
@@ -33,11 +31,11 @@ export class WhatsappBot {
 
     }
     async processCommand(command: string, args: string[], chatId: string): Promise<string> {
-        const ACommand = this.commands[command]
-        console.log(ACommand)
-        if(!ACommand) {
+        const aCommand = this.commands[command]
+        console.log(aCommand)
+        if(!aCommand) {
             return 'Comando não encontrado!'
         }
-                return await ACommand.execute(chatId, args)   
+                return await aCommand.execute(chatId, args)   
     }
 }

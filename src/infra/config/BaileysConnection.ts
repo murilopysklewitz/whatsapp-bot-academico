@@ -1,71 +1,65 @@
-import makeWASocket, { 
-  useMultiFileAuthState, 
+import makeWASocket, {
+  useMultiFileAuthState,
+  fetchLatestBaileysVersion,
   DisconnectReason,
-  fetchLatestBaileysVersion
-} from '@whiskeysockets/baileys';
-import { Boom } from '@hapi/boom';
-import qrcode from 'qrcode';
+} from '@whiskeysockets/baileys'
+import fs from 'fs'
+import path from 'path'
+import qrcode from 'qrcode'
 
-export async function createBaileysConnection(
-  onMessage: (sender: string, message: string) => void
+export async function connectBaileys(
+  onMessage: (chatId: string, text: string, sock: any) => Promise<void>
 ) {
-  const { state, saveCreds } = await useMultiFileAuthState('./auth_info');
-  const { version } = await fetchLatestBaileysVersion();
+  const authDir = path.resolve('auth_info')
+
+  const { state, saveCreds } = await useMultiFileAuthState(authDir)
+  const { version } = await fetchLatestBaileysVersion()
 
   const sock = makeWASocket({
     version,
     auth: state,
-    browser: ['Ubuntu', 'Chrome', '20.0.04'],
     printQRInTerminal: false,
-  });
+    browser: ['ZapBot', 'Chrome', '1.0'],
+  })
 
-  sock.ev.on('creds.update', saveCreds);
+  sock.ev.on('creds.update', saveCreds)
 
   sock.ev.on('connection.update', async (update) => {
-    const { connection, lastDisconnect, qr } = update;
+    const { connection, lastDisconnect, qr } = update
 
     if (qr) {
-      // Salva como PNG (funciona em Docker e local)
-      await qrcode.toFile('./qrcode.png', qr, { width: 300 });
-      console.log('\n📱 QR Code salvo em: ./qrcode.png');
-      console.log('⏰ Escaneie em 60s\n');
-    }
-  
-    if (connection === 'close') {
-      const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode;
-      console.log(`❌ Desconectado. Status: ${statusCode}`);
-      
-      if (statusCode === 440) {
-        console.log('⏱️  QR expirou. Gerando novo...');
-        setTimeout(() => createBaileysConnection(onMessage), 5000);
-      } else if (statusCode !== DisconnectReason.loggedOut && statusCode !== 401) {
-        console.log('🔄 Reconectando em 10s...');
-        setTimeout(() => createBaileysConnection(onMessage), 10000);
-      }
+      await qrcode.toFile('qrcode.png', qr)
+      console.log('📸 QR Code salvo em qrcode.png')
     }
 
     if (connection === 'open') {
-      console.log('✅ Conectado!\n');
+      console.log('✅ WhatsApp conectado com sucesso')
     }
-  });
-  
-  sock.ev.on('messages.upsert', async ({ messages, type }) => {
-    if (type !== 'notify') return;
 
-    for (const msg of messages) {
-      if (!msg.message || msg.key.fromMe) continue;
+    if (connection === 'close') {
+      const reason = lastDisconnect?.error?.output?.statusCode
+      console.log('❌ Conexão fechada:', reason)
 
-      const sender = msg.key.remoteJid!;
-      const text = 
-        msg.message.conversation ||
-        msg.message.extendedTextMessage?.text ||
-        '';
-
-      if (text) {
-        await onMessage(sender, text);
+      if (reason !== DisconnectReason.loggedOut) {
+        console.log('🔄 Reconectando...')
+        connectBaileys(onMessage)
       }
     }
-  });
+  })
 
-  return { sock };
+  sock.ev.on('messages.upsert', async ({ messages }) => {
+    const msg = messages[0]
+    if (!msg.message || msg.key.fromMe) return
+
+    const chatId = msg.key.remoteJid!
+    const text =
+      msg.message.conversation ||
+      msg.message.extendedTextMessage?.text
+
+    if (text) {
+      await onMessage(chatId, text, sock)
+    }
+  })
+
+  return { sock }
 }

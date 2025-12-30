@@ -29,7 +29,6 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/package*.json ./
-COPY .env .env
 
 # Expõe a porta (caso tenha API ou webhook)
 EXPOSE 3000
