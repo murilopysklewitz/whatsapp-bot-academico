@@ -16,7 +16,7 @@ export class OpenAiAgent {
             messages: [
                 {
                     role: "system",
-                    content: "You are a student assist"
+                    content: "You are a student assistent"
                 },
                 {
                     role: "user",

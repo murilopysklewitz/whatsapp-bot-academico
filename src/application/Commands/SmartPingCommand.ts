@@ -12,7 +12,7 @@ export class SmartPingCommand implements ICommands {
             return "Fala alguma coisa ai rapaz não tenha vergonha";
         }
 
-        return  this.openAiAgent.returnMessage(message);
+        return await this.openAiAgent.returnMessage(message);
     }
     
 }
