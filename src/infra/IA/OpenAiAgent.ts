@@ -31,7 +31,7 @@ export class OpenAiAgent {
         return response.choices[0]?.message.content ?? '';
     }
     
-    async processAviso(message: string): Promise<smartPingResult> {
+    async processAviso(message: string): Promise<string> {
         const response = await this.client.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
@@ -52,29 +52,7 @@ export class OpenAiAgent {
         const result = response.choices[0]?.message.content ?? '';
         console.log("[OPEN AI AGENT] resposta da IA sem tratamento", result);
         if(!result) throw new Error("mensagem não encontrada");
-
-        try{
-
-            let parsed = JSON.parse(result);
-
-            console.log("[OPEN AI AGENT] RESPOSTA DA IA TRATADA", parsed);
-
-
-            if(!this.isValidAviso(parsed)){throw new Error("Aviso inválido")}
-
-            return parsed;
-
-        }catch(e: any){
-            throw new Error("Não foi possível processar mensagem", e);
-        }
-    }
-
-    private isValidAviso(obj: any): boolean{
-        return (
-            typeof obj?.isAviso === 'boolean' &&
-            ('message' in obj) &&
-            ('date' in obj)
-          )
+        return result;
     }
 
     private buildAvisoPrompt(message: string): string {
